@@ -28,8 +28,19 @@ namespace APICatalogo.Controllers
             }
             return produto;
         }
+
+        [HttpGet] // IActionResult é uma Interface que é implementada em ActionResult, entretando, é mais interessante utilizar IAction, pois teremos flexibilidade (mais retornos)
+        public IActionResult GetExemple()
+        {
+            var produto = _context.Produtos.FirstOrDefault();
+            if (produto == null)
+            {
+                return NotFound();
+            }
+            return Ok(produto);
+        }
         
-        [HttpGet]
+        [HttpGet] //ActionResult<Tipo> é o mais performátco 
         public ActionResult<IEnumerable<Produto>> Get() // método pra retornar uma lista de objetos produto
         {//com o ActionResult, a actions espera o retorno de uma lista OU de qualquer tipo Action (ex: NotFound)
             var produtos = _context.Produtos.AsNoTracking().ToList();
@@ -41,17 +52,22 @@ namespace APICatalogo.Controllers
             return produtos;
         }
 
-        //restringindo a rota, recebendo apenas se for int > 0
-
+        //restringindo a rota, recebendo apenas se for int > 0 action ASSINCRONA
         [HttpGet("{id:int:min(1)}", Name ="ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public async Task<ActionResult<Produto>> Get(int id)
         {
-            var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p=> p.ProdutoId == id);
+            var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p=> p.ProdutoId == id);
             if(produto is null)
             {
                 return NotFound("Produto não encontrado...");
             }
             return produto;
+        }
+        // deixando a action ASSINCRONA
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Produto>>> GetAssync()
+        {
+            return await  _context.Produtos.AsNoTracking().ToListAsync();
         }
 
         [HttpPost]
