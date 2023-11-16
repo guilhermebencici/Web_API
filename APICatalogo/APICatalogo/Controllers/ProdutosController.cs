@@ -41,7 +41,9 @@ namespace APICatalogo.Controllers
             return produtos;
         }
 
-        [HttpGet("{id:int}", Name ="ObterProduto")]
+        //restringindo a rota, recebendo apenas se for int > 0
+
+        [HttpGet("{id:int:min(1)}", Name ="ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
             var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p=> p.ProdutoId == id);
