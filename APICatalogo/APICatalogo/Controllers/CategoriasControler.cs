@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
+using APICatalogo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,12 @@ namespace APICatalogo.Controllers
         {
             return _context.Categorias.Include(p => p.Produtos).AsNoTracking().ToList(); //Include -> Carrega entidades relacionadas
         }
+        [HttpGet("saudacao/{nome}")]
+        public ActionResult<string> GetSaudacao([FromServices] IMeuServico meuservico, string nome)
+        {
+            return meuservico.Saudacaco(nome);
+        }
+
 
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get() // método pra retornar uma lista de objetos produto

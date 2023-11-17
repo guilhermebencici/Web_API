@@ -1,10 +1,13 @@
 using APICatalogo.Context;
+using APICatalogo.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Tempo de vida AddTrnasient, indica que a instancia do serviço que sera criada, vai ser criada toda vez que for solicitada
+builder.Services.AddTransient<IMeuServico, MeuServico>();
+
 // Ignorando referência Ciclica
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = 
 ReferenceHandler.IgnoreCycles);

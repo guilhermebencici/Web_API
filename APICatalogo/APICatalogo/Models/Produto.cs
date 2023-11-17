@@ -8,8 +8,10 @@ namespace APICatalogo.Models
     {
         [Key]
         public int ProdutoId { get; set; }
-        [Required]
-        [StringLength(80)]
+
+        //MELHORANDO OS DATA ANNOTATIONS
+        [Required(ErrorMessage = "O nome é obrigatório")]
+        [StringLength(80, ErrorMessage ="O nome deve terentre 5 e 80 caracteres", MinimumLength = 5)]
         public string? Nome { get; set; }
         [Required]
         [StringLength(300)]
