@@ -1,96 +1,122 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
-using APICatalogo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
-    [Route("[Controller]")]
+    [Route("api/[Controller]")]
     [ApiController]
-    public class CategoriasControler : Controller
+    public class ProdutosController : Controller // para uma classe ser controller precisa da herança
     {
         private readonly AppDbContext _context;
 
-        public CategoriasControler(AppDbContext context)
+        public ProdutosController(AppDbContext context)
         {
             _context = context;
         }
 
         // MÉTODOS ACTIONS
-        [HttpGet("Produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
-        {
-            return _context.Categorias.Include(p => p.Produtos).AsNoTracking().ToList(); //Include -> Carrega entidades relacionadas
-        }
-        [HttpGet("saudacao/{nome}")]
-        public ActionResult<string> GetSaudacao([FromServices] IMeuServico meuservico, string nome)
-        {
-            return meuservico.Saudacaco(nome);
-        }
 
-
-        [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get() // método pra retornar uma lista de objetos produto
+        [HttpGet("primeiro")]
+        public ActionResult<Produto> GetPrimeiro()
         {
-            return _context.Categorias.AsNoTracking().ToList();//AsNoTracking, evita o rastreamento e com isso melhora a performace - só utilizar em métodos de leitura-
-        }
-
-        [HttpGet("{id:int}", Name = "ObterCategoria")]
-        public ActionResult<Categoria> Get(int id)
-        {
-            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
-            if (categoria is null)
+            var produto = _context.Produtos.FirstOrDefault();
+            if (produto is null)
             {
-                return NotFound("Categoria não encontrada...");
+                return NotFound();
             }
-            return Ok(categoria);
+            return produto;
+        }
+
+        [HttpGet] // IActionResult é uma Interface que é implementada em ActionResult, entretando, é mais interessante utilizar IAction, pois teremos flexibilidade (mais retornos)
+        public IActionResult GetExemple()
+        {
+            var produto = _context.Produtos.FirstOrDefault();
+            if (produto == null)
+            {
+                return NotFound();
+            }
+            return Ok(produto);
+        }
+
+        [HttpGet] //ActionResult<Tipo> é o mais performátco 
+        public ActionResult<IEnumerable<Produto>> Get() // método pra retornar uma lista de objetos produto
+        {//com o ActionResult, a actions espera o retorno de uma lista OU de qualquer tipo Action (ex: NotFound)
+            var produtos = _context.Produtos.AsNoTracking().ToList();
+
+            if (produtos is null)
+            {
+                return NotFound("Produtos não encontrados!");
+            }
+            return produtos;
+        }
+
+        //restringindo a rota, recebendo apenas se for int > 0 action ASSINCRONA
+        [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
+        public async Task<ActionResult<Produto>> Get(int id)
+        {
+            var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
+            if (produto is null)
+            {
+                return NotFound("Produto não encontrado...");
+            }
+            return produto;
+        }
+        // deixando a action ASSINCRONA
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Produto>>> GetAssync()
+        {
+            return await _context.Produtos.AsNoTracking().ToListAsync();
         }
 
         [HttpPost]
-        public ActionResult Post(Categoria categoria)
+        public ActionResult Post(Produto produto)// estou passando um objeto do tipo PRODUTO
         {
-            if (categoria is null)
+            if (produto is null)
             {
-                return BadRequest("Reveja as infos. Categoria não salva!");
+                return BadRequest("Reveja as infos. Produto não salvo!");
             }
-            _context.Categorias.Add(categoria);// incluindo o objeto no contexto (memória)
+            _context.Produtos.Add(produto);// incluindo o objeto no contexto (memória)
             _context.SaveChanges(); // salvando na tabela do banco
 
-            return new CreatedAtRouteResult("ObterCategoria",
-                new { id = categoria.CategoriaId }, categoria);
+            return new CreatedAtRouteResult("ObterProduto",
+                new { id = produto.ProdutoId }, produto);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Categoria categoria) //id por parametro e produto pelo body
+        public ActionResult Put(int id, Produto produto) //id por parametro e produto pelo body
         {
-            if (id != categoria.CategoriaId)
+            if (id != produto.ProdutoId)
             {
                 return BadRequest();
             }
 
-            //entiddade Categoria, em estado modificado, precisa ser alterada:
-            _context.Entry(categoria).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            //entiddade Produto, em estado modificado, precisa ser alterado:
+            _context.Entry(produto).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             _context.SaveChanges();
 
-            return Ok(categoria);
+            return Ok(produto);
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<Categoria> Delete(int id)
+        public ActionResult Delete(int id)
         {
-            //var categoria = _context.Categorias.Find(id); FIND(), utilizado quando a coluna for PK
-            var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+            //var prodtu = _context.Produtos.Find(id); FIND(), utilizado quando a coluna for PK
+            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
 
-            if (categoria is null)
+            if (produto is null)
             {
-                return NotFound("Categoria não encontrada...");
+                return NotFound("Produto não encontrado...");
             }
 
-            _context.Remove(categoria);
+            _context.Remove(produto);
             _context.SaveChanges();
 
-            return Ok(categoria);
+            return Ok(produto);
         }
     }
 }

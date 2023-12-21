@@ -1,119 +1,104 @@
-﻿using APICatalogo.Context;
+﻿using ApiCatalogo.Filters;
+using APICatalogo.Context;
 using APICatalogo.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace APICatalogo.Controllers
+namespace ApiCatalogo.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
-    public class ProdutosController : Controller // para uma classe ser controller precisa da herança
+    public class ProdutosController : ControllerBase
     {
         private readonly AppDbContext _context;
-
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(AppDbContext contexto)
         {
-            _context = context;
+            _context = contexto;
         }
 
-        // MÉTODOS ACTIONS
-
-        [HttpGet("primeiro")]
-        public ActionResult<Produto> GetPrimeiro()
-        {
-            var produto = _context.Produtos.FirstOrDefault();
-            if(produto is null)
-            {
-                return NotFound();
-            }
-            return produto;
-        }
-
-        [HttpGet] // IActionResult é uma Interface que é implementada em ActionResult, entretando, é mais interessante utilizar IAction, pois teremos flexibilidade (mais retornos)
-        public IActionResult GetExemple()
-        {
-            var produto = _context.Produtos.FirstOrDefault();
-            if (produto == null)
-            {
-                return NotFound();
-            }
-            return Ok(produto);
-        }
-        
-        [HttpGet] //ActionResult<Tipo> é o mais performátco 
-        public ActionResult<IEnumerable<Produto>> Get() // método pra retornar uma lista de objetos produto
-        {//com o ActionResult, a actions espera o retorno de uma lista OU de qualquer tipo Action (ex: NotFound)
-            var produtos = _context.Produtos.AsNoTracking().ToList();
-
-            if(produtos is null)
-            {
-                return NotFound("Produtos não encontrados!");
-            }
-            return produtos;
-        }
-
-        //restringindo a rota, recebendo apenas se for int > 0 action ASSINCRONA
-        [HttpGet("{id:int:min(1)}", Name ="ObterProduto")]
-        public async Task<ActionResult<Produto>> Get(int id)
-        {
-            var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p=> p.ProdutoId == id);
-            if(produto is null)
-            {
-                return NotFound("Produto não encontrado...");
-            }
-            return produto;
-        }
-        // deixando a action ASSINCRONA
+        // api/produtos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produto>>> GetAssync()
+        //[ServiceFilter(typeof(ApiLoggingFilter))]
+        public async Task<ActionResult<IEnumerable<Produto>>> Get()
         {
-            return await  _context.Produtos.AsNoTracking().ToListAsync();
+            return await _context.Produtos.AsNoTracking().ToListAsync();
+        }   
+        
+        // api/produtos/1
+        [HttpGet("{id}", Name ="ObterProduto")]
+        public async Task<ActionResult<Produto>> Get(int id )
+        {
+
+            //throw new Exception("Exception ao retornar produto pelo id");
+            //string[] teste = null;
+            //if (teste.Length > 0)
+            //{ }
+
+            var produto = await _context.Produtos.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ProdutoId == id);
+
+            if(produto == null)
+            {
+                return NotFound();
+            }
+            return produto;
         }
 
+        //  api/produtos
         [HttpPost]
-        public ActionResult Post(Produto produto)// estou passando um objeto do tipo PRODUTO
+        public ActionResult Post([FromBody]Produto produto)
         {
-            if(produto is null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Reveja as infos. Produto não salvo!");
+                return BadRequest(ModelState);
             }
-            _context.Produtos.Add(produto);// incluindo o objeto no contexto (memória)
-            _context.SaveChanges(); // salvando na tabela do banco
+
+            _context.Produtos.Add(produto);
+            _context.SaveChanges();
 
             return new CreatedAtRouteResult("ObterProduto",
                 new { id = produto.ProdutoId }, produto);
         }
 
-        [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto) //id por parametro e produto pelo body
+        // api/produtos/1
+        [HttpPut("{id}")]
+        public ActionResult Put(int id,[FromBody] Produto produto)
         {
-            if(id != produto.ProdutoId)
+
+            //if(!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+            if( id != produto.ProdutoId)
             {
                 return BadRequest();
             }
 
-            //entiddade Produto, em estado modificado, precisa ser alterado:
-            _context.Entry(produto).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.Entry(produto).State = EntityState.Modified;
             _context.SaveChanges();
-
-            return Ok(produto);
+            return Ok();
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        //  api/produtos/1
+        [HttpDelete("{id}")]
+        public ActionResult<Produto> Delete(int id)
         {
-            //var prodtu = _context.Produtos.Find(id); FIND(), utilizado quando a coluna for PK
             var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            //var produto = _context.Produtos.Find(id);
 
-            if(produto is null)
+            if (produto == null)
             {
-                return NotFound("Produto não encontrado...");
+                return NotFound();
             }
 
-            _context.Remove(produto);
+            _context.Produtos.Remove(produto);
             _context.SaveChanges();
-
-            return Ok(produto);
+            return produto;
         }
     }
 }
