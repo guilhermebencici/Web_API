@@ -3,7 +3,7 @@ using APICatalogo.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace APICatalogo.Repository
+namespace ApiCatalogo.Repository
 {
     public class ProdutoRepository : Repository<Produto>, IProdutoRepository
     {

@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "DJBrBS2HDdG9eWO2/JlZ7l4PpGzzmsdVoMOcenku0gmqR/x7SiUoO4/BRGV4AUgAnlWt4+IxZUsqL5yRwf9KEQ==",
+  "dgSpecHash": "tT8IwhTmkeek+sPg7jon0dvyrPlqbz0r3NT6ajmpFBUgVw6/LBiMebINmTntGnswFKTKeWI5i8ktkn2sVRZy2Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\guilherme.a.souza\\Desktop\\Anima_UDEMY\\WEB_API\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
+  "projectFilePath": "C:\\Users\\guilherme.a.souza\\Desktop\\Anima_UDEMY\\WEB_API\\APICatalogo\\APICatalogo\\ApiCatalogo.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\guilherme.a.souza\\.nuget\\packages\\automapper\\8.1.1\\automapper.8.1.1.nupkg.sha512",
+    "C:\\Users\\guilherme.a.souza\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\6.1.1\\automapper.extensions.microsoft.dependencyinjection.6.1.1.nupkg.sha512",
     "C:\\Users\\guilherme.a.souza\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.0.0-preview5-19227-01\\microsoft.aspnetcore.jsonpatch.3.0.0-preview5-19227-01.nupkg.sha512",
     "C:\\Users\\guilherme.a.souza\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.0.0-preview5-19227-01\\microsoft.aspnetcore.mvc.newtonsoftjson.3.0.0-preview5-19227-01.nupkg.sha512",
     "C:\\Users\\guilherme.a.souza\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\3.0.0-preview5.19227.1\\microsoft.aspnetcore.razor.language.3.0.0-preview5.19227.1.nupkg.sha512",

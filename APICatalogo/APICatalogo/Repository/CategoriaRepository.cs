@@ -1,8 +1,9 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace APICatalogo.Repository
+namespace ApiCatalogo.Repository
 {
     public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
     {
@@ -12,7 +13,7 @@ namespace APICatalogo.Repository
 
         public IEnumerable<Categoria> GetCategoriasProdutos()
         {
-            throw new System.NotImplementedException();
+            return Get().Include(x => x.Produtos);
         }
     }
 }

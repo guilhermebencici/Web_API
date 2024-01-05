@@ -1,6 +1,9 @@
+using ApiCatalogo.DTOs.Mappings;
 using ApiCatalogo.Extensions;
 using ApiCatalogo.Filters;
+using ApiCatalogo.Repository;
 using APICatalogo.Context;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +26,18 @@ namespace APICatalogo
         // Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
             //services.AddScoped<ApiLoggingFilter>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddDbContext<AppDbContext>(options =>
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 

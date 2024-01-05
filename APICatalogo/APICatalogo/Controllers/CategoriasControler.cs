@@ -1,122 +1,98 @@
-﻿using APICatalogo.Context;
+﻿using APICatalogo.DTOs;
 using APICatalogo.Models;
+using APICatalogo.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
-    public class ProdutosController : Controller // para uma classe ser controller precisa da herança
+    public class CategoriasController : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public ProdutosController(AppDbContext context)
+        private readonly IUnitOfWork _context;
+        private readonly IMapper _mapper;
+        public CategoriasController(IUnitOfWork contexto, IMapper mapper)
         {
-            _context = context;
+            _context = contexto;
+            _mapper = mapper;
         }
 
-        // MÉTODOS ACTIONS
-
-        [HttpGet("primeiro")]
-        public ActionResult<Produto> GetPrimeiro()
+        [HttpGet("produtos")]
+        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasProdutos()
         {
-            var produto = _context.Produtos.FirstOrDefault();
-            if (produto is null)
-            {
-                return NotFound();
-            }
-            return produto;
+            var categorias = _context.CategoriaRepository.GetCategoriasProdutos().ToList();
+            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
+            return categoriasDto;
         }
 
-        [HttpGet] // IActionResult é uma Interface que é implementada em ActionResult, entretando, é mais interessante utilizar IAction, pois teremos flexibilidade (mais retornos)
-        public IActionResult GetExemple()
-        {
-            var produto = _context.Produtos.FirstOrDefault();
-            if (produto == null)
-            {
-                return NotFound();
-            }
-            return Ok(produto);
-        }
-
-        [HttpGet] //ActionResult<Tipo> é o mais performátco 
-        public ActionResult<IEnumerable<Produto>> Get() // método pra retornar uma lista de objetos produto
-        {//com o ActionResult, a actions espera o retorno de uma lista OU de qualquer tipo Action (ex: NotFound)
-            var produtos = _context.Produtos.AsNoTracking().ToList();
-
-            if (produtos is null)
-            {
-                return NotFound("Produtos não encontrados!");
-            }
-            return produtos;
-        }
-
-        //restringindo a rota, recebendo apenas se for int > 0 action ASSINCRONA
-        [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
-        public async Task<ActionResult<Produto>> Get(int id)
-        {
-            var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
-            if (produto is null)
-            {
-                return NotFound("Produto não encontrado...");
-            }
-            return produto;
-        }
-        // deixando a action ASSINCRONA
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produto>>> GetAssync()
+        public ActionResult<IEnumerable<CategoriaDTO>> Get()
         {
-            return await _context.Produtos.AsNoTracking().ToListAsync();
+            var categorias = _context.CategoriaRepository.Get().ToList();
+            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
+            return categoriasDto;
+        }
+
+        [HttpGet("{id}", Name = "ObterCategoria")]
+        public ActionResult<CategoriaDTO> Get(int id)
+        {
+            var categoria = _context.CategoriaRepository.GetById(p => p.CategoriaId == id);
+
+            if (categoria == null)
+            {
+                return NotFound();
+            }
+            var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
+            return categoriaDto;
         }
 
         [HttpPost]
-        public ActionResult Post(Produto produto)// estou passando um objeto do tipo PRODUTO
+        public ActionResult Post([FromBody] CategoriaDTO categoriaDto)
         {
-            if (produto is null)
-            {
-                return BadRequest("Reveja as infos. Produto não salvo!");
-            }
-            _context.Produtos.Add(produto);// incluindo o objeto no contexto (memória)
-            _context.SaveChanges(); // salvando na tabela do banco
+            var categoria = _mapper.Map<Categoria>(categoriaDto);
 
-            return new CreatedAtRouteResult("ObterProduto",
-                new { id = produto.ProdutoId }, produto);
+            _context.CategoriaRepository.Add(categoria);
+            _context.Commit();
+
+            var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
+
+            return new CreatedAtRouteResult("ObterCategoria",
+                new { id = categoria.CategoriaId }, categoriaDTO);
         }
 
-        [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto) //id por parametro e produto pelo body
+        [HttpPut("{id}")]
+        public ActionResult Put(int id, [FromBody] CategoriaDTO categoriaDto)
         {
-            if (id != produto.ProdutoId)
+            if (id != categoriaDto.CategoriaId)
             {
                 return BadRequest();
             }
 
-            //entiddade Produto, em estado modificado, precisa ser alterado:
-            _context.Entry(produto).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            _context.SaveChanges();
+            var categoria = _mapper.Map<Categoria>(categoriaDto);
 
-            return Ok(produto);
+            _context.CategoriaRepository.Update(categoria);
+            _context.Commit();
+            return Ok();
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        [HttpDelete("{id}")]
+        public ActionResult<CategoriaDTO> Delete(int id)
         {
-            //var prodtu = _context.Produtos.Find(id); FIND(), utilizado quando a coluna for PK
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var categoria = _context.CategoriaRepository.GetById(p => p.CategoriaId == id);
 
-            if (produto is null)
+            if (categoria == null)
             {
-                return NotFound("Produto não encontrado...");
+                return NotFound();
             }
+            _context.CategoriaRepository.Delete(categoria);
+            _context.Commit();
 
-            _context.Remove(produto);
-            _context.SaveChanges();
+            var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
 
-            return Ok(produto);
+            return categoriaDto;
         }
     }
 }

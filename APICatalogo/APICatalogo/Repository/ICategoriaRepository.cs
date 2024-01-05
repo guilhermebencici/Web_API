@@ -1,8 +1,7 @@
 ﻿using APICatalogo.Models;
-using System.Collections;
 using System.Collections.Generic;
 
-namespace APICatalogo.Repository
+namespace ApiCatalogo.Repository
 {
     public interface ICategoriaRepository : IRepository<Categoria>
     {

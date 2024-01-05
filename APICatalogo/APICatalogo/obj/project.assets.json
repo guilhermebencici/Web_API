@@ -2,6 +2,40 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.0": {
+      "AutoMapper/8.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CSharp": "4.5.0",
+          "System.Reflection.Emit": "4.3.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/AutoMapper.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/AutoMapper.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "AutoMapper.Extensions.Microsoft.DependencyInjection/6.1.1": {
+        "type": "package",
+        "dependencies": {
+          "AutoMapper": "8.1.1",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll": {
+            "related": ".pdb"
+          }
+        }
+      },
       "Microsoft.AspNetCore.JsonPatch/3.0.0-preview5-19227-01": {
         "type": "package",
         "dependencies": {
@@ -1721,7 +1755,7 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.1/_._": {
+          "ref/netstandard1.1/System.Reflection.Emit.dll": {
             "related": ".xml"
           }
         },
@@ -1737,7 +1771,7 @@
           "System.Runtime": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.0/_._": {
+          "ref/netstandard1.0/System.Reflection.Emit.ILGeneration.dll": {
             "related": ".xml"
           }
         },
@@ -2329,6 +2363,36 @@
     }
   },
   "libraries": {
+    "AutoMapper/8.1.1": {
+      "sha512": "GKBliBukkLG0z/U0T4Jy+yEpr5bKDImQ9nEy/T8jqNulwNkWDjiEWa9TL4yCxIhleDbmVmw2xYSaJ3Eb2OcSUg==",
+      "type": "package",
+      "path": "automapper/8.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "automapper.8.1.1.nupkg.sha512",
+        "automapper.nuspec",
+        "lib/net461/AutoMapper.dll",
+        "lib/net461/AutoMapper.pdb",
+        "lib/net461/AutoMapper.xml",
+        "lib/netstandard2.0/AutoMapper.dll",
+        "lib/netstandard2.0/AutoMapper.pdb",
+        "lib/netstandard2.0/AutoMapper.xml"
+      ]
+    },
+    "AutoMapper.Extensions.Microsoft.DependencyInjection/6.1.1": {
+      "sha512": "MPMgL6JGEH2Egmgh3+tw2UVX05ph8As7YtYWzt2ZDCc0STHGG5EsV3UMWH/g4aHaN1q20Bbc0PTMy3I0PwgBGQ==",
+      "type": "package",
+      "path": "automapper.extensions.microsoft.dependencyinjection/6.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "automapper.extensions.microsoft.dependencyinjection.6.1.1.nupkg.sha512",
+        "automapper.extensions.microsoft.dependencyinjection.nuspec",
+        "lib/netstandard2.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll",
+        "lib/netstandard2.0/AutoMapper.Extensions.Microsoft.DependencyInjection.pdb"
+      ]
+    },
     "Microsoft.AspNetCore.JsonPatch/3.0.0-preview5-19227-01": {
       "sha512": "pwKI1d0w3mk0r8wZLOptvkXud3W8zPgR50ijLDo0wz5fFU0Cvn/wOE1uhLZf2cRt2ezgnQngw7ofX9Tf+cJUdQ==",
       "type": "package",
@@ -6975,6 +7039,8 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.0": [
+      "AutoMapper >= 8.1.1",
+      "AutoMapper.Extensions.Microsoft.DependencyInjection >= 6.1.1",
       "Microsoft.AspNetCore.Mvc.NewtonsoftJson >= 3.0.0-preview5-19227-01",
       "Microsoft.EntityFrameworkCore >= 2.2.4",
       "Microsoft.EntityFrameworkCore.Tools >= 2.2.4",
@@ -6989,9 +7055,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\guilherme.a.souza\\Desktop\\Anima_UDEMY\\WEB_API\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
-      "projectName": "APICatalogo",
-      "projectPath": "C:\\Users\\guilherme.a.souza\\Desktop\\Anima_UDEMY\\WEB_API\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
+      "projectUniqueName": "C:\\Users\\guilherme.a.souza\\Desktop\\Anima_UDEMY\\WEB_API\\APICatalogo\\APICatalogo\\ApiCatalogo.csproj",
+      "projectName": "ApiCatalogo",
+      "projectPath": "C:\\Users\\guilherme.a.souza\\Desktop\\Anima_UDEMY\\WEB_API\\APICatalogo\\APICatalogo\\ApiCatalogo.csproj",
       "packagesPath": "C:\\Users\\guilherme.a.souza\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\guilherme.a.souza\\Desktop\\Anima_UDEMY\\WEB_API\\APICatalogo\\APICatalogo\\obj\\",
       "projectStyle": "PackageReference",
@@ -7028,6 +7094,14 @@
       "netcoreapp3.0": {
         "targetAlias": "netcoreapp3.0",
         "dependencies": {
+          "AutoMapper": {
+            "target": "Package",
+            "version": "[8.1.1, )"
+          },
+          "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+            "target": "Package",
+            "version": "[6.1.1, )"
+          },
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
             "target": "Package",
             "version": "[3.0.0-preview5-19227-01, )"
